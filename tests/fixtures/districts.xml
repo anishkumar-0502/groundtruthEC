@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding='UTF-8' standalone='yes'?>
+<select name='cmb_District' id='cmb_District' style='width:250px;'>
+    <option value='-1'>தெரிவு செய்க</option>
+    <option value='50006'>கோயம்புத்தூர் தெற்கு</option>
+    <option value='20006'>கோயம்புத்தூர் வடக்கு</option>
+</select>
+

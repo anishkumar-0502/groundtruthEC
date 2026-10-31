@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding='UTF-8' standalone='yes'?>
+<select name='cmb_Village' id='cmb_Village' style='width:250px;'>
+    <option value='-1'>தெரிவு செய்க</option>
+    <option value='2739'>மதுக்கரை</option>
+    <option value='2740'>எட்டிமடை</option>
+    <option value='2745'>மலுமிச்சம்பட்டி</option>
+</select>
+
