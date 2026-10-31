@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="utf-8">
+<title>Search Encumbrance Certificate</title>
+<script>
+var csrf = "test-csrf-token-12345";
+function getAjaxSecurityToken() { return csrf; }
+</script>
+</head>
+<body>
+<form id="EncumbranceCertificateForm" name="EncumbranceCertificateForm" action="web?" method="post">
+    <input type="hidden" name="authToken" id="authToken" value="test-auth-token-67890">
+    <input type="hidden" name="formId" id="formId" value="EncumbranceCertificateForm">
+    <input type="hidden" name="docCreateAppId" id="docCreateAppId" value="8400001">
+    <input type="hidden" name="appTransId" id="appTransId" value="0">
+    <select name="cmb_Zone" id="cmb_Zone">
+        <option value="-1">தெரிவு செய்க</option>
+        <option value="2">கோயம்புத்தூர்</option>
+        <option value="1">சென்னை</option>
+        <option value="4">மதுரை</option>
+    </select>
+    <div id="districtDiv">
+        <select name="cmb_District" id="cmb_District">
+            <option value="-1">தெரிவு செய்க</option>
+        </select>
+    </div>
+    <div id="sroDiv">
+        <select name="cmb_SroName" id="cmb_SroName">
+            <option value="-1">தெரிவு செய்க</option>
+        </select>
+    </div>
+    <div id="villageDiv">
+        <select name="cmb_Village" id="cmb_Village">
+            <option value="-1">தெரிவு செய்க</option>
+        </select>
+    </div>
+    <input type="text" name="txt_PeriodStartDt" id="txt_PeriodStartDt" value="">
+    <input type="text" name="txt_PeriodEndDt" id="txt_PeriodEndDt" value="">
+    <input type="text" name="txt_SurveyNo" id="txt_SurveyNo" value="">
+    <input type="text" name="txt_SubDivisionNo" id="txt_SubDivisionNo" value="">
+    <input type="text" name="txt_Captcha" id="txt_Captcha" value="">
+    <img id="captcha" src="SimpleCaptcha?12345" alt="Captcha">
+    <div id="divPropertyList"></div>
+    <div id="divNothingFound" style="text-align:center; display:none;">
+        தேடுதல் காலத்தில் எந்த ஆவணங்களும் பதிவு செய்யப்படவில்லை.
+    </div>
+</form>
+</body>
+</html>
+
