@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding='UTF-8' standalone='yes'?>
+<select name='cmb_SroName' id='cmb_SroName' style='width:250px;'>
+    <option value='-1'>தெரிவு செய்க</option>
+    <option value='20120:1'>மதுக்கரை</option>
+    <option value='20117:1'>சிங்காநல்லூர்</option>
+    <option value='20123:1'>பீளமேடு</option>
+</select>
+

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ground Truth — TNREGINET EC Retrieval Service</title>
+    <link rel="stylesheet" href="/static/style.css?v=3.3">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="app-header">
+        <div class="container header-container">
+            <div class="brand">
+                <span class="brand-badge">TNREGINET</span>
+                <h1>Ground Truth</h1>
+                <span class="brand-sub" id="i18n_brandSub">Encumbrance Certificate Retrieval</span>
+            </div>
+            <div class="header-controls">
+                <!-- Language Switcher Selector -->
+                <div class="lang-selector-group">
+                    <label for="appLanguageSelect" class="lang-label">🌐 Language:</label>
+                    <select id="appLanguageSelect" class="lang-select">
+                        <option value="en" selected>English</option>
+                        <option value="ta">தமிழ் (Tamil)</option>
+                    </select>
+                </div>
+                <a href="/docs" target="_blank" class="api-docs-link">API Docs (Swagger)</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container main-content">
+        <!-- Search Configuration Card -->
+        <section class="card search-card">
+            <div class="card-header">
+                <h2 id="i18n_step1Title">Step 1: Configure EC Search</h2>
+                <p id="i18n_step1Sub">Select location hierarchy dynamically loaded from the official portal.</p>
+            </div>
+
+            <!-- Search Mode Selection -->
+            <div class="mode-selector">
+                <label class="mode-option">
+                    <input type="radio" name="searchMode" value="survey_number" checked id="modeSurvey">
+                    <span class="mode-label">
+                        <strong id="i18n_modeSurveyTitle">Survey Number Search</strong>
+                        <small id="i18n_modeSurveySub">Search by Village, Survey No., and optional Subdivision</small>
+                    </span>
+                </label>
+                <label class="mode-option">
+                    <input type="radio" name="searchMode" value="ward_block" id="modeWardBlock">
+                    <span class="mode-label">
+                        <strong id="i18n_modeWardTitle">Town Ward / Block Search</strong>
+                        <small id="i18n_modeWardSub">Search by Village, Town, Ward, and Block</small>
+                    </span>
+                </label>
+            </div>
+
+            <form id="searchForm" class="form-grid">
+                <!-- Location Dropdowns -->
+                <div class="form-group">
+                    <label for="cmbZone"><span id="i18n_lblZone">Registration Zone</span> <span class="required">*</span></label>
+                    <select id="cmbZone" required>
+                        <option value="">Loading Zones...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="cmbDistrict"><span id="i18n_lblDistrict">District</span> <span class="required">*</span></label>
+                    <select id="cmbDistrict" required disabled>
+                        <option value="">Select Zone First</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="cmbSro"><span id="i18n_lblSro">Sub-Registrar Office (SRO)</span> <span class="required">*</span></label>
+                    <select id="cmbSro" required disabled>
+                        <option value="">Select District First</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="cmbVillage"><span id="i18n_lblVillage">Village</span> <span class="required">*</span></label>
+                    <select id="cmbVillage" required disabled>
+                        <option value="">Select SRO First</option>
+                    </select>
+                </div>
+
+                <!-- Mode A: Survey Number Fields -->
+                <div class="form-group survey-mode-field">
+                    <label for="txtSurveyNo"><span id="i18n_lblSurveyNo">Survey Number</span> <span class="required">*</span></label>
+                    <input type="text" id="txtSurveyNo" placeholder="e.g. 999" value="999">
+                </div>
+
+                <div class="form-group survey-mode-field">
+                    <label for="txtSubDivNo"><span id="i18n_lblSubDivNo">Subdivision (Optional)</span> <span class="optional" id="i18n_optional">(blank = discover all)</span></label>
+                    <input type="text" id="txtSubDivNo" placeholder="blank = discover all">
+                </div>
+                <div class="form-full-width survey-mode-field">
+                    <p class="form-hint" id="formSurveyHint">Fetches the EC for survey 999 and lists every subdivision with transactions in the period.</p>
+                </div>
+
+                <!-- Mode B: Ward / Block Fields -->
+                <div class="form-group ward-mode-field hidden">
+                    <label for="cmbTown"><span id="i18n_lblTown">Revenue Town</span> <span class="required">*</span></label>
+                    <select id="cmbTown" disabled>
+                        <option value="">Select Village First</option>
+                    </select>
+                </div>
+
+                <div class="form-group ward-mode-field hidden">
+                    <label for="cmbWard"><span id="i18n_lblWard">Ward</span> <span class="required">*</span></label>
+                    <select id="cmbWard" disabled>
+                        <option value="">Select Town First</option>
+                    </select>
+                </div>
+
+                <div class="form-group ward-mode-field hidden">
+                    <label for="cmbBlock"><span id="i18n_lblBlock">Block</span> <span class="required">*</span></label>
+                    <select id="cmbBlock" disabled>
+                        <option value="">Select Ward First</option>
+                    </select>
+                </div>
+
+                <!-- Date Range -->
+                <div class="form-group">
+                    <label for="txtStartDate"><span id="i18n_lblStartDate">Start Date</span> <span class="required">*</span></label>
+                    <input type="text" id="txtStartDate" placeholder="DD/MM/YYYY" value="01/01/2010" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="txtEndDate"><span id="i18n_lblEndDate">End Date</span> <span class="required">*</span></label>
+                    <input type="text" id="txtEndDate" placeholder="DD/MM/YYYY" value="31/12/2010" required>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="btnStartSearch" class="btn btn-primary">
+                        <span class="btn-text" id="i18n_btnStartSearch">Initialize Portal Session & Retrieve CAPTCHA</span>
+                        <span class="btn-spinner hidden"></span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Step 2: Human CAPTCHA Card (shown when session created) -->
+        <section id="captchaSection" class="card captcha-card hidden">
+            <div class="card-header">
+                <h2 id="i18n_step2Title">Step 2: Enter Portal CAPTCHA</h2>
+                <p id="i18n_step2Sub">Human verification required. This image was fetched directly from TNREGINET in real-time.</p>
+            </div>
+
+            <div class="captcha-box">
+                <div class="captcha-img-container">
+                    <img id="captchaImage" src="" alt="Live Portal CAPTCHA">
+                    <button type="button" id="btnRefreshCaptcha" class="btn btn-sm btn-outline" title="Refresh CAPTCHA">
+                        ↺ Reload
+                    </button>
+                </div>
+
+                <div class="captcha-input-group">
+                    <label for="txtCaptcha" id="i18n_lblCaptchaPrompt">Enter the characters displayed in the image above:</label>
+                    <div class="input-action-row">
+                        <input type="text" id="txtCaptcha" placeholder="Enter CAPTCHA text" autocomplete="off" autofocus>
+                        <button type="button" id="btnSubmitSearch" class="btn btn-success">
+                            <span class="btn-text" id="i18n_btnSubmitSearch">Submit & Search EC</span>
+                            <span class="btn-spinner hidden"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Status / Alert Box -->
+        <div id="statusAlert" class="alert hidden">
+            <div class="alert-icon" id="alertIcon"></div>
+            <div class="alert-content">
+                <h4 id="alertTitle">Notice</h4>
+                <p id="alertMessage"></p>
+            </div>
+        </div>
+
+        <!-- Step 3: EC Download & Sub-divisions Sections (Matches Ground Truth site) -->
+        <section id="downloadCard" class="card download-card hidden">
+            <div class="download-card-body">
+                <div class="download-badge-group">
+                    <div class="check-circle-icon">✓</div>
+                    <div>
+                        <strong class="download-card-title">EC downloaded and saved to your account.</strong>
+                        <p class="download-card-sub">It loads instantly next time. Edit the search above to download another.</p>
+                    </div>
+                </div>
+                <div class="download-actions-group">
+                    <button type="button" id="btnDownloadECMain" class="btn btn-emerald">
+                        Download Intelligence Report
+                    </button>
+                    <button type="button" id="btnDownloadOriginalMain" class="btn btn-outline">
+                        Official Government EC
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 4: Discovered Subdivisions Section -->
+        <section id="subdivisionsSection" class="card subdivisions-card hidden">
+            <div class="section-badge-header">
+                <span class="badge-number">2</span>
+                <span class="badge-title">FETCH SUB-DIVISIONS</span>
+            </div>
+
+            <div class="subdiv-control-bar">
+                <div class="subdiv-dropdown-wrapper">
+                    <button type="button" class="subdiv-selector-trigger" id="subdivDropdownTrigger">
+                        <span id="subdivSelectedCountText">3 selected: 999/1, 999/1A, 999/4</span>
+                        <span class="chevron-icon">▾</span>
+                    </button>
+                    <div class="subdiv-dropdown-menu hidden" id="subdivDropdownMenu">
+                        <div class="subdiv-dropdown-actions">
+                            <button type="button" class="action-link" id="btnSelectAllSubdivs">Select all uncached</button>
+                            <button type="button" class="action-link text-muted" id="btnClearSubdivs">Clear</button>
+                        </div>
+                        <div class="subdiv-checkbox-container" id="subdivCheckboxList">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+                <div class="subdiv-batch-actions">
+                    <span id="subdivSummaryCount" class="text-muted">3 found · 3 selected</span>
+                    <button type="button" id="btnDownloadSelectedSubdivs" class="btn btn-emerald">
+                        Download 3 selected
+                    </button>
+                </div>
+            </div>
+
+            <!-- Individual Subdivision Cards with CAPTCHA and Download -->
+            <div class="subdiv-cards-list" id="subdivCardsList">
+                <!-- Populated dynamically: 999/1, 999/1A, 999/4 -->
+            </div>
+        </section>
+
+        <!-- Step 5: EC Results Section (Tabular Transaction Records) -->
+        <section id="resultsSection" class="card results-card hidden">
+            <div class="results-header">
+                <div>
+                    <h2 id="i18n_resultsTitle">Encumbrance Certificate Records</h2>
+                    <p id="resultsSummary">Transactions found for the selected property.</p>
+                </div>
+                <div id="pdfActionContainer" class="hidden">
+                    <button id="btnDownloadPdf" class="btn btn-pdf">
+                        <span id="i18n_btnDownloadPdf">📄 Download Property Intelligence Report</span>
+                    </button>
+                    <button id="btnDownloadOriginalPdf" class="btn btn-outline" style="margin-left: 0.5rem;">
+                        <span>🏛️ Official Government EC</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="data-table" id="ecTable">
+                    <thead>
+                        <tr>
+                            <th id="i18n_thDocNo">Document #</th>
+                            <th id="i18n_thYear">Year</th>
+                            <th id="i18n_thRegDate">Registration Date</th>
+                            <th id="i18n_thDocType">Document Type</th>
+                            <th id="i18n_thExecutants">Executants (எழுதி கொடுத்தவர்)</th>
+                            <th id="i18n_thClaimants">Claimants (எழுதி வாங்கியவர்)</th>
+                            <th id="i18n_thConsid">Consideration Value</th>
+                            <th id="i18n_thMarket">Market Value</th>
+                            <th id="i18n_thSurvey">Survey Nos.</th>
+                            <th id="i18n_thAction" style="text-align: center;">Document / Download</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ecTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <p class="saved-ecs-disclaimer">We check your saved ECs first and serve those instantly; only a new (survey, period) that isn't saved needs a download, where you solve the CAPTCHA yourself — never bypassed.</p>
+
+        <!-- Recently Downloaded Section -->
+        <section class="recently-section" id="recentlyDownloadedSection">
+            <h4 class="sub-heading">RECENTLY DOWNLOADED</h4>
+            <div class="pills-flex" id="recentlyDownloadedPills">
+                <!-- Dynamically populated from localStorage -->
+            </div>
+        </section>
+
+        <!-- Your Saved ECs Table Section -->
+        <section class="card saved-card" id="savedEcsSection">
+            <div class="card-header">
+                <h4 class="sub-heading" id="savedEcsHeading">YOUR SAVED ECS · SURVEY 999</h4>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table saved-ecs-table">
+                    <thead>
+                        <tr>
+                            <th>Sub-division</th>
+                            <th>Period</th>
+                            <th>Entries</th>
+                            <th>Document</th>
+                        </tr>
+                    </thead>
+                    <tbody id="savedEcsTableBody">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Modal: Government EC CAPTCHA Verification -->
+        <div id="captchaModal" class="modal-overlay hidden">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Solve Portal CAPTCHA</h3>
+                    <button type="button" class="modal-close-btn" id="btnModalClose">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalDescription" class="modal-desc">
+                        Human verification required by the registration department portal to retrieve the authentic Government Encumbrance Certificate.
+                    </p>
+                    <div class="modal-captcha-row">
+                        <img id="modalCaptchaImg" src="/static/captcha_sample.png" alt="Portal CAPTCHA" class="captcha-preview" style="height: 48px; border-radius: 4px;">
+                        <button type="button" class="btn-subdiv-refresh" id="btnModalRefreshCaptcha" title="Reload CAPTCHA">↻</button>
+                    </div>
+                    <div class="form-group" style="margin-top: 1.25rem;">
+                        <label for="modalCaptchaInput" class="form-label" style="font-weight: 600; color: #1e293b;">Enter characters displayed above:</label>
+                        <input type="text" id="modalCaptchaInput" class="form-control" placeholder="e.g. EX32F" maxlength="10" autocomplete="off" style="text-transform: uppercase; font-weight: 700; letter-spacing: 0.1em; font-size: 1.15rem; text-align: center; height: 44px;">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" id="btnModalCancel">Cancel</button>
+                    <button type="button" class="btn btn-emerald" id="btnModalSubmit">
+                        <span class="btn-text">Verify & Download Government EC</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <div class="container footer-content">
+            <p>Ground Truth — TNREGINET Encumbrance Certificate Retrieval Service. Designed for IPPO RE Technologies LLP.</p>
+            <p><small>Enforces a 2.0s rate limit between requests to respect government portal infrastructure. Never bypasses security controls.</small></p>
+        </div>
+    </footer>
+
+    <script src="/static/app.js?v=3.5"></script>
+</body>
+</html>
